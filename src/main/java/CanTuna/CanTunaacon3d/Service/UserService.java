@@ -40,5 +40,9 @@ public class UserService {
         return userRepository.findAllUser();
     }
 
+    public Long loginUser(User user){
+        return userRepository.authUser(user);
+    }
+
 
 }

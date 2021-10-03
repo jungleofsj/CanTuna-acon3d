@@ -8,16 +8,18 @@ import java.util.Optional;
 
 public interface ItemRepository {
 
-    Item createItem(Item item);
+    Item createItem(Item item, User user);
 
     Optional<Item> editItem(Long itemId , Item updateItem, User editUser);
-    Optional<Item> findItemById(String itemId);
+    Optional<Item> findItemById(Long itemId);
 
     Optional<Item> findItemByName(String itemName);
 
     List<Item> findItemByCreator(String creatorName);
 
     List<Item> findNonApprovedItem();
+
+    List<Item> findApprovedItem();
 
     List<Item> findAllItem();
 

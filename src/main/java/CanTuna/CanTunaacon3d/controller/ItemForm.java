@@ -1,7 +1,6 @@
-package CanTuna.CanTunaacon3d.domain;
+package CanTuna.CanTunaacon3d.controller;
 
-public class Item {
-
+public class ItemForm {
     private long itemId;
     private String itemNameKor;
     private String itemNameEng;
@@ -93,7 +92,6 @@ public class Item {
     }
 
     public Double getItemPrice() {
-        //System.out.println(itemPrice);
         return itemPrice;
     }
 
@@ -116,4 +114,5 @@ public class Item {
     public void setItemApproved(Boolean itemApproved) {
         this.itemApproved = itemApproved;
     }
+
 }

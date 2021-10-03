@@ -23,7 +23,7 @@ public class JdbcTempUserRepository implements UserRepository{
     @Override
     public User createUser(User user) {
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert((jdbcTemplate));
-        jdbcInsert.withTableName("user").usingGeneratedKeyColumns("id");
+        jdbcInsert.withTableName("user").usingColumns("name", "type", "reg_date", "updt_date").usingGeneratedKeyColumns("id");
 
         Map<String, Object> param = new HashMap<>();
 
@@ -62,6 +62,17 @@ public class JdbcTempUserRepository implements UserRepository{
     public List<User> findAllUser() {
         List<User> result = jdbcTemplate.query("select * from user ", userRowMapper());
         return result;
+    }
+
+    @Override
+    public Long authUser(User user) {
+        Boolean auth = null;
+        if (jdbcTemplate.query("select * from user where name = ? AND type = ?", userRowMapper(), user.getUserName(), user.getUserType()).isEmpty()) {
+            throw new IllegalStateException("로그인에 실패");
+        } else {
+            return user.getUserType();
+        }
+
     }
 
     private RowMapper<User> userRowMapper() {

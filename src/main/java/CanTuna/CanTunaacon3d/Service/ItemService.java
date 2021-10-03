@@ -34,12 +34,12 @@ public class ItemService {
         this.itemRepository = itemRepository;
     }
 
-    public Long createItem(Item item, User user) {
+    public Item createItem(Item item, User user) {
         //작가 권한 조회
         authCreator(user);
-        itemRepository.createItem(item);
+        Item result = itemRepository.createItem(item, user);
 
-        return item.getItemId();
+        return result;
     }
 
     public Long updateItem(Long targetId, Item updateItem, User editUser) {
@@ -53,11 +53,33 @@ public class ItemService {
 
     public  Optional<Item> findItemByName(String itemName) {
         Optional<Item> findItem = itemRepository.findItemByName(itemName);
-        return findItem;
+        Item temp = findItem.get();
+        System.out.println("-----------------------");
+        System.out.println("Serviceitemfind id ::: " +  temp.getItemId());
+        System.out.println("Serviceitemfind namekor ::: " +  temp.getItemNameKor());
+        System.out.println("Serviceitemfind creator ::: " +  temp.getItemCreator() );
+        System.out.println("Serviceitemfind approved ::: " +  temp.getItemApproved());
+        System.out.println("Serviceitemfind approved ::: " +  temp.getItemTextKor());
+        System.out.println("-----------------------");
+        return findItem.stream().findAny();
+    }
+
+    public  Optional<Item> findItemById(Long itemId) {
+        Optional<Item> findItem = itemRepository.findItemById(itemId);
+        return findItem.stream().findAny();
     }
 
     public List<Item> viewItem() {
         List<Item>itemList = itemRepository.findAllItem();
+        return itemList;
+    }
+    public List<Item> viewApprovedItem() {
+        List<Item>itemList = itemRepository.findApprovedItem();
+        return itemList;
+    }
+
+    public List<Item> nonApprovedItem() {
+        List<Item>itemList = itemRepository.findNonApprovedItem();
         return itemList;
     }
 

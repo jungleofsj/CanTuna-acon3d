@@ -21,7 +21,7 @@ public class JdbcTempItemRepository implements ItemRepository{
 
 
     @Override
-    public Item createItem(Item item) {
+    public Item createItem(Item item, User user) {
 
         /*jdbcTemplate.update("INSERT INTO ITEM (name_kor = ?, text_kor = ?,price = ?,reg_date = ?, updt_date = ?) ", itemRowMapper(),
                                     item.getItemNameKor(), item.getItemTextKor(),item.getItemPrice(), getDate(), getDate());
@@ -32,13 +32,14 @@ public class JdbcTempItemRepository implements ItemRepository{
 
 
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        jdbcInsert.withTableName("ITEM").usingColumns("name_kor","text_kor","price", "approved", "reg_date", "updt_date" ).usingGeneratedKeyColumns("id");
+        jdbcInsert.withTableName("ITEM").usingColumns("name_kor","text_kor","price","creator", "approved", "reg_date", "updt_date" ).usingGeneratedKeyColumns("id");
 
         Map<String, Object> param = new HashMap<>();
 
-        param.put("name", item.getItemNameKor());
+        param.put("name_kor", item.getItemNameKor());
         param.put("text_kor", item.getItemTextKor());
         param.put("price", item.getItemPrice());
+        param.put("creator", item.getItemCreator());
 
         //상품의 approved 항목 default value
         param.put("approved", false);
@@ -53,7 +54,7 @@ public class JdbcTempItemRepository implements ItemRepository{
         return item;
     }
     @Override
-    public Optional<Item> findItemById(String itemId) {
+    public Optional<Item> findItemById(Long itemId) {
         List<Item> result = jdbcTemplate.query("select * from ITEM where id = ?", itemRowMapper(), itemId);
         return result.stream().findAny();
     }
@@ -61,16 +62,15 @@ public class JdbcTempItemRepository implements ItemRepository{
     @Override
     public Optional<Item> editItem(Long itemId , Item updateItem, User editUser) {
 
-        List<Item> result = jdbcTemplate
-                .query("update ITEM " +
-                        "set (name_kor = ?, name_eng = ?, name_chn = ?, " +
+        jdbcTemplate.update("update ITEM " +
+                        "set name_kor = ?, name_eng = ?, name_chn = ?, " +
                                 "text_kor = ?, text_eng = ?, text_chn = ?, " +
                                 "editor = ?, commission = ?, approved = ?, " +
-                                "updt_date = ?) " +
-                                "where id = ?", itemRowMapper(),
-                        updateItem.getItemNameKor(),  updateItem.getItemNameChn(),        updateItem.getItemNameEng(),
-                        updateItem.getItemTextKor(),        updateItem.getItemTextEng(),        updateItem.getItemTextCHN(),
-                        editUser.getUserId(),               updateItem.getItemCommissonPct(),   updateItem.getItemApproved(),
+                                "updt_date = ? " +
+                                "where id = ?", /*itemRowMapper(),*/
+                        updateItem.getItemNameKor(),  updateItem.getItemNameEng(),        updateItem.getItemNameChn(),
+                        updateItem.getItemTextKor(),        updateItem.getItemTextEng(),        updateItem.getItemTextChn(),
+                        editUser.getUserName(),               updateItem.getItemCommissonPct(),   updateItem.getItemApproved(),
                         getDate(),
                         itemId);
         List<Item> targetResult = jdbcTemplate.query("select * from ITEM where id = ?", itemRowMapper(), itemId);
@@ -83,6 +83,14 @@ public class JdbcTempItemRepository implements ItemRepository{
     public Optional<Item> findItemByName(String itemName) {
         List<Item> result = jdbcTemplate.query("select * from ITEM where name_kor = ?", itemRowMapper(), itemName);
 
+        Item resultItem  = result.stream().findAny().get();
+        System.out.println("findItembyName 결과 ");
+        System.out.println("findItembyName id ::: " +  resultItem.getItemId());
+        System.out.println("findItembyName namekor ::: " +  resultItem.getItemNameKor());
+        System.out.println("findItembyName creator ::: " +  resultItem.getItemCreator() );
+        System.out.println("findItembyName approved ::: " +  resultItem.getItemApproved());
+        System.out.println("findItembyName approved ::: " +  resultItem.getItemTextKor());
+        System.out.println("-----------------------");
         return result.stream().findAny();
     }
 
@@ -97,6 +105,12 @@ public class JdbcTempItemRepository implements ItemRepository{
     public List<Item> findNonApprovedItem() {
         List<Item> result = jdbcTemplate.query("select * from ITEM where approved = ?", itemRowMapper(), false);
         return result;
+    }
+
+    @Override
+    public List<Item> findApprovedItem() {
+        List<Item> result = jdbcTemplate.query("select * from ITEM where approved = ?", itemRowMapper(), true);
+        return jdbcTemplate.query("select * from ITEM where approved = ?", itemRowMapper(), true);
     }
 
     @Override
@@ -133,9 +147,19 @@ public class JdbcTempItemRepository implements ItemRepository{
             Item item = new Item();
             item.setItemId(rs.getLong("id"));
             item.setItemNameKor(rs.getString("name_kor"));
+            item.setItemNameEng(rs.getString("name_eng"));
+            item.setItemNameChn(rs.getString("name_chn"));
             item.setItemCreator(rs.getString("creator"));
+            item.setItemEditor(rs.getString("editor"));
+            item.setItemPrice(rs.getDouble("price"));
+            item.setItemCommissonPct(rs.getDouble("commission"));
             item.setItemApproved(rs.getBoolean("approved"));
-            System.out.println("RowMapper :::" +  item.getItemId() + item.getItemNameKor() +item.getItemCreator() );
+            item.setItemTextKor(rs.getString("text_kor"));
+            item.setItemTextEng(rs.getString("text_eng"));
+            item.setItemTextChn(rs.getString("text_chn"));
+            //System.out.println(item.getItemNameKor());
+            //System.out.println(item.getItemApproved());
+
             return item;
 
         };
