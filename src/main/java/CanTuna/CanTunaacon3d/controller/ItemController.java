@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class ItemController {
@@ -57,24 +58,29 @@ public class ItemController {
     }
 
     @PostMapping("/items/update")
-    public String updateItem(ItemForm form, User user) {
+    public String updateItem(ItemForm itemForm, UserForm userForm) {
 
-        Item updateItem = new Item();
 
-        updateItem.setItemEditor(user.getUserName());
 
-        updateItem.setItemNameEng(form.getItemNameEng());
-        updateItem.setItemNameChn(form.getItemNameChn());
+        Item upItem = new Item();
+        User userEdit = new User();
+        userEdit.setUserId(userForm.getId());
+        userEdit.setUserName(userForm.getName());
+        userEdit.setUserType(userForm.getType());
 
-        updateItem.setItemTextEng(form.getItemTextEng());
-        updateItem.setItemTextChn(form.getItemTextChn());
+        upItem.setItemEditor(userForm.getName());
 
-        updateItem.setItemCommissonPct(form.getItemCommissonPct());
+        upItem.setItemNameEng(itemForm.getItemNameEng());
+        upItem.setItemNameChn(itemForm.getItemNameChn());
 
-        updateItem.setItemApproved(true);
+        upItem.setItemTextEng(itemForm.getItemTextEng());
+        upItem.setItemTextChn(itemForm.getItemTextChn());
 
-        itemService.updateItem(form.getItemId(), updateItem, user);
+        upItem.setItemCommissonPct(itemForm.getItemCommissonPct());
 
+        upItem.setItemApproved(true);
+
+        itemService.updateItem(itemForm.getItemId(), upItem, userEdit);
         return "redirect:/items/all";
     }
 

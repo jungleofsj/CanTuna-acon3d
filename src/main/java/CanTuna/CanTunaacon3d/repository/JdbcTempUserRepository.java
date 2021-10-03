@@ -68,7 +68,7 @@ public class JdbcTempUserRepository implements UserRepository{
     public Long authUser(User user) {
         Boolean auth = null;
         if (jdbcTemplate.query("select * from user where name = ? AND type = ?", userRowMapper(), user.getUserName(), user.getUserType()).isEmpty()) {
-            throw new IllegalStateException("로그인에 실패");
+            return null;
         } else {
             return user.getUserType();
         }

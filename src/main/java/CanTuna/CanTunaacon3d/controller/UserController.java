@@ -37,25 +37,38 @@ public class UserController {
         return "redirect:/";
     }
 
-    /*@GetMapping("/users/login")
-    public String loginForm() {
-        return "users/login";
-    }*/
     @GetMapping("/users/login")
-    public String validUser(@RequestParam("username") String userName,@RequestParam("usertype") Long userType ) {
+    public String loginForm() {
+        return "/login";
+    }
+    @PostMapping("/users/login")
+//    public String validUser(@RequestParam("username") String userName,@RequestParam("usertype") Long userType ) {
+    public String validUser(UserForm form ) {
         User user = new User();
 
-        user.setUserName(userName);
-        user.setUserType(userType);
+        user.setUserName(form.getName());
+        user.setUserType(form.getType());
 
         //userService.joinUser(user);
-        if (userService.loginUser(user)==0L) {
-            return "redirect:/items/new";
-        } else if (userService.loginUser(user)==1L) {
-            return "redirect:/items/update";
-        } else if (userService.loginUser(user)==2L) {
-            return "redirect:/items/approved";
+        Boolean loginStatus = null;
+        if (userService.loginUser(user) == null) {
+            return "redirect:/users/login";
+        } else {
+
+            form.setId(userService.findUserbyName(form.getName()).get().getUserId());
+
+            if (userService.loginUser(user)==0L) {
+                return "redirect:/";
+            } else if (userService.loginUser(user)==1L) {
+                return "redirect:/items/update";
+            } else if (userService.loginUser(user)==2L) {
+                return "redirect:/items/approved";
+            }
         }
+
+
+
+
 
 
 

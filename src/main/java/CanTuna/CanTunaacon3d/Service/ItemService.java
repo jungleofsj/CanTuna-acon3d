@@ -42,13 +42,13 @@ public class ItemService {
         return result;
     }
 
-    public Long updateItem(Long targetId, Item updateItem, User editUser) {
+    public Optional<Item> updateItem(Long targetId, Item updateItem, User editUser) {
         // 에디터 권한 조회
-        authEditor(editUser);
+        //authEditor(editUser);
 
-        itemRepository.editItem(targetId, updateItem, editUser);
+        Optional<Item> result = itemRepository.editItem(targetId, updateItem, editUser);
 
-        return updateItem.getItemId();
+        return result;
     }
 
     public  Optional<Item> findItemByName(String itemName) {
