@@ -104,7 +104,20 @@ Y : Service(상품 정보 수정) > try{Repository(DB 수정)}catch{}>service(OK
 
 [ITEM TABLE](https://www.notion.so/f46960c71d5342b0ba8a3e9a28c71511)
 
-[PURCHASED_LIST TABLE](https://www.notion.so/159c8f69697a4323999c4e216efa1218)
+
+Name	Tags	Column
+		
+id	bigint	구매 기록 ID
+item_id	bigint	구매 상품 ID
+customer_id	bigint	구매 고객 ID
+quantity	bigint	구매 수량
+price	double	구매 가격
+totalprice	double	총 구매가격, price *quantity * 환율
+currency	varchar(255)	구매 통화
+reg_date	bigint	작성 일자
+updt_date	bigint	수정 일자
+![image](https://user-images.githubusercontent.com/22030175/135893778-85a9b713-5ed8-44bd-a4e3-85f38b0a78bd.png)
+
 
 - CREATE TABLE
 
